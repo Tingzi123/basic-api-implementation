@@ -43,14 +43,11 @@ public class RsController {
         rsList.add(rsEvent);
     }
 
-    @PutMapping("/rs/event/change")
-    public void changeRsEvent(@RequestBody int index, @RequestBody String key, @RequestBody String value) throws JsonProcessingException {
-        RsEvent rsEvent = rsList.get(index);
-        if (key.equals("eventName")) {
-            rsEvent.setEventName(value);
-        } else {
-            rsEvent.setKeyword(value);
-        }
+    @PutMapping("/rs/event/change/{index}")
+    public void changeRsEvent(@PathVariable int index,
+                              @RequestBody String rsEventStr) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        RsEvent rsEvent = objectMapper.readValue(rsEventStr, RsEvent.class);
         rsList.set(index, rsEvent);
     }
 

@@ -107,8 +107,11 @@ class RsListApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",hasSize(3)));
 
+        RsEvent rsEvent=new RsEvent("第三条事件","生活");
+        ObjectMapper objectMapper=new ObjectMapper();
+        String json=objectMapper.writeValueAsString(rsEvent);
 
-        mockMvc.perform(put("/rs/event/change").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(put("/rs/event/change/2").content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/rs/list"))
@@ -119,7 +122,7 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[1].eventName",is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword",is("无分类")))
                 .andExpect(jsonPath("$[2].eventName",is("第三条事件")))
-                .andExpect(jsonPath("$[2].keyword",is("无分类")));
+                .andExpect(jsonPath("$[2].keyword",is("生活")));
     }
 
     @Test
