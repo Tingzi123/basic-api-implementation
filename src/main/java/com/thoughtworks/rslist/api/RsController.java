@@ -13,18 +13,18 @@ import java.util.List;
 public class RsController {
     private List<RsEvent> rsList = initRsList();
 
-    private List<RsEvent> initRsList(){
-        List<RsEvent> tmpRsList=new ArrayList<>();
-        tmpRsList.add(new RsEvent("第一条事件","无分类"));
-        tmpRsList.add(new RsEvent("第二条事件","无分类"));
-        tmpRsList.add(new RsEvent("第三条事件","无分类"));
+    private List<RsEvent> initRsList() {
+        List<RsEvent> tmpRsList = new ArrayList<>();
+        tmpRsList.add(new RsEvent("第一条事件", "无分类"));
+        tmpRsList.add(new RsEvent("第二条事件", "无分类"));
+        tmpRsList.add(new RsEvent("第三条事件", "无分类"));
 
         return tmpRsList;
     }
 
     @GetMapping("/rs/list")
     public List<RsEvent> getAllRsEvent(@RequestParam(required = false) Integer start,
-                                @RequestParam(required = false) Integer end) {
+                                       @RequestParam(required = false) Integer end) {
         if (start == null || end == null) {
             return rsList;
         }
@@ -38,8 +38,25 @@ public class RsController {
 
     @PostMapping("/rs/event")
     public void addRsEvent(@RequestBody String rsEventStr) throws JsonProcessingException {
-        ObjectMapper objectMapper=new ObjectMapper();
-        RsEvent rsEvent=objectMapper.readValue(rsEventStr,RsEvent.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        RsEvent rsEvent = objectMapper.readValue(rsEventStr, RsEvent.class);
         rsList.add(rsEvent);
     }
+
+    @PutMapping("/rs/event/change")
+    public void changeRsEvent(@RequestBody int index, @RequestBody String key, @RequestBody String value) throws JsonProcessingException {
+        RsEvent rsEvent = rsList.get(index);
+        if (key.equals("eventName")) {
+            rsEvent.setEventName(value);
+        } else {
+            rsEvent.setKeyword(value);
+        }
+        rsList.set(index, rsEvent);
+    }
+
+    @DeleteMapping("/rs/event/delete/{index}")
+    public void deleteRsEvent(@PathVariable int index) {
+        rsList.remove(index);
+    }
+
 }
