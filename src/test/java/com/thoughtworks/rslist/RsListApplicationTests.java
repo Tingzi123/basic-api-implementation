@@ -19,7 +19,7 @@ class RsListApplicationTests {
     MockMvc mockMvc;
 
     @Test
-    void contextLoads() throws Exception {
+    void should_get_rs_list() throws Exception {
         //get("rs/list")
         /*MvcResult mvcResult = mockMvc.perform(get("rs/list")).andreturn();
         MockHttpServletResponse response=mvcResuit.getResponse();
