@@ -79,7 +79,7 @@ class RsControllerTests {
         String json=objectMapper.writeValueAsString(rsEvent);
 
         mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
@@ -105,7 +105,7 @@ class RsControllerTests {
         String json=objectMapper.writeValueAsString(rsEvent);
 
         mockMvc.perform(put("/rs/event/change/2").content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
