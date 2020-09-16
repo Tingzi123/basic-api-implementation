@@ -20,7 +20,7 @@ public class UserControllerTest {
 
     @Test
     void should_register_user() throws Exception {
-        UserDto userDto=new UserDto("chenting","woman",18,"@","123456");
+        UserDto userDto=new UserDto("chenting","woman",18,"ting@163.com","12345678910");
         ObjectMapper objectMapper=new ObjectMapper();
         String userDtoJson=objectMapper.writeValueAsString(userDto);
 
@@ -32,7 +32,7 @@ public class UserControllerTest {
 
     @Test
     void name_should_not_empty_or_null() throws Exception {
-        UserDto userDto=new UserDto(null,"woman",18,"@","123456");
+        UserDto userDto=new UserDto(null,"woman",18,"ting@163.com","12345678910");
         ObjectMapper objectMapper=new ObjectMapper();
         String userDtoJson=objectMapper.writeValueAsString(userDto);
 
@@ -44,7 +44,19 @@ public class UserControllerTest {
 
     @Test
     void name_length_should_no_more_than_8() throws Exception {
-        UserDto userDto=new UserDto("chenchenchen","woman",18,"@","123456");
+        UserDto userDto=new UserDto("chenchenchen","woman",18,"ting@163.com","12345678910");
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userDtoJson=objectMapper.writeValueAsString(userDto);
+
+        mockMvc.perform(post("/user/register")
+                .content(userDtoJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_no_register_when_gender_is_empty() throws Exception {
+        UserDto userDto=new UserDto("chenting","",18,"ting@163.com","12345678910");
         ObjectMapper objectMapper=new ObjectMapper();
         String userDtoJson=objectMapper.writeValueAsString(userDto);
 
