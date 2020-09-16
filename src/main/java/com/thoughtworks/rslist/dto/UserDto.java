@@ -25,6 +25,7 @@ public class UserDto {
     private String email;
 
     @NotEmpty
+    @Pattern(regexp = "^1//d{10}")
     private String phone;
     private Integer vote = 10;
 
