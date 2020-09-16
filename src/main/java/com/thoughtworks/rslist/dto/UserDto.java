@@ -23,6 +23,8 @@ public class UserDto {
     @NotEmpty
     @Email
     private String email;
+
+    @NotEmpty
     private String phone;
     private Integer vote = 10;
 
