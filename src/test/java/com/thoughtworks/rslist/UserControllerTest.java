@@ -89,4 +89,16 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void should_no_register_when_age_is_more_than_100() throws Exception {
+        UserDto userDto=new UserDto("chenting","1",101,"ting@163.com","12345678910");
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userDtoJson=objectMapper.writeValueAsString(userDto);
+
+        mockMvc.perform(post("/user/register")
+                .content(userDtoJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }
