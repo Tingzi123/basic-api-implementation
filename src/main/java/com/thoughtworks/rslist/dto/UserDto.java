@@ -21,6 +21,7 @@ public class UserDto {
     private Integer age;
 
     @NotEmpty
+    @Email
     private String email;
     private String phone;
     private Integer vote = 10;
