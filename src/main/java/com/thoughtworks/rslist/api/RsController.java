@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -23,12 +24,12 @@ public class RsController {
     }
 
     @GetMapping("/rs/list")
-    public List<RsEvent> getAllRsEvent(@RequestParam(required = false) Integer start,
-                                       @RequestParam(required = false) Integer end) {
+    public ResponseEntity<List<RsEvent>> getAllRsEvent(@RequestParam(required = false) Integer start,
+                                                      @RequestParam(required = false) Integer end) {
         if (start == null || end == null) {
-            return rsList;
+            return ResponseEntity.ok(rsList);
         }
-        return rsList.subList(start - 1, end);
+        return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
 
     @GetMapping("/rs/list/{index}")
