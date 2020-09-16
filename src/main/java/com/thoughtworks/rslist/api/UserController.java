@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.UserDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,10 +17,9 @@ public class UserController {
     private List<UserDto> userDtos=new ArrayList<>();
 
     @PostMapping("/user/register")
-    public void register(@Valid @RequestBody UserDto userDtoStr) {
-        /*ObjectMapper objectMapper=new ObjectMapper();
-        UserDto userDto=objectMapper.readValue(userDtoStr,UserDto.class);*/
+    public ResponseEntity register(@Valid @RequestBody UserDto userDtoStr) {
         userDtos.add(userDtoStr);
+        return ResponseEntity.created(null).build();
     }
 
 }
