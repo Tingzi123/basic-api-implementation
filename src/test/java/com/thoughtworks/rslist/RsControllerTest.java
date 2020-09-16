@@ -95,12 +95,13 @@ class RsControllerTests {
     }
 
     @Test
-    void should_change_a_rs_event() throws Exception {
+    void should_change_keyword_with_rs_event() throws Exception {
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",hasSize(3)));
 
-        RsEvent rsEvent=new RsEvent("第三条事件","生活");
+        RsEvent rsEvent=new RsEvent("第三条事件","无分类");
+        rsEvent.setKeyword("生活");
         ObjectMapper objectMapper=new ObjectMapper();
         String json=objectMapper.writeValueAsString(rsEvent);
 
@@ -115,6 +116,57 @@ class RsControllerTests {
                 .andExpect(jsonPath("$[1].eventName",is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyword",is("无分类")))
                 .andExpect(jsonPath("$[2].eventName",is("第三条事件")))
+                .andExpect(jsonPath("$[2].keyword",is("生活")));
+    }
+
+    @Test
+    void should_change_event_name_with_rs_event() throws Exception {
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(3)));
+
+        RsEvent rsEvent=new RsEvent("第三条事件","无分类");
+        rsEvent.setEventName("今天");
+        ObjectMapper objectMapper=new ObjectMapper();
+        String json=objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(put("/rs/event/change/2").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(3)))
+                .andExpect(jsonPath("$[0].eventName",is("第一条事件")))
+                .andExpect(jsonPath("$[0].keyword",is("无分类")))
+                .andExpect(jsonPath("$[1].eventName",is("第二条事件")))
+                .andExpect(jsonPath("$[1].keyword",is("无分类")))
+                .andExpect(jsonPath("$[2].eventName",is("今天")))
+                .andExpect(jsonPath("$[2].keyword",is("无分类")));
+    }
+
+    @Test
+    void should_change_event_name_and_keyword_with_rs_event() throws Exception {
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(3)));
+
+        RsEvent rsEvent=new RsEvent("第三条事件","无分类");
+        rsEvent.setEventName("今天");
+        rsEvent.setKeyword("生活");
+        ObjectMapper objectMapper=new ObjectMapper();
+        String json=objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(put("/rs/event/change/2").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$",hasSize(3)))
+                .andExpect(jsonPath("$[0].eventName",is("第一条事件")))
+                .andExpect(jsonPath("$[0].keyword",is("无分类")))
+                .andExpect(jsonPath("$[1].eventName",is("第二条事件")))
+                .andExpect(jsonPath("$[1].keyword",is("无分类")))
+                .andExpect(jsonPath("$[2].eventName",is("今天")))
                 .andExpect(jsonPath("$[2].keyword",is("生活")));
     }
 
