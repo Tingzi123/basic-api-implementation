@@ -38,14 +38,15 @@ public class RsController {
 
     @GetMapping("/rs/list/{index}")
     public ResponseEntity<RsEvent> getRsEvent(@PathVariable int index) {
+        if (index>rsList.size()){
+            throw new IndexOutOfBoundsException();
+        }
         List<RsEvent> reRsEvents = getRsEventsNotUser();
         return ResponseEntity.ok(reRsEvents.get(index - 1));
     }
 
     @PostMapping("/rs/event")
-    public ResponseEntity addRsEvent(@Valid @RequestBody String rsEventStr) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        RsEvent rsEvent = objectMapper.readValue(rsEventStr, RsEvent.class);
+    public ResponseEntity addRsEvent(@Valid @RequestBody RsEvent rsEvent) throws JsonProcessingException {
         for (RsEvent rs : rsList) {
             if (rs.getUserDto().getName().equals(rsEvent.getUserDto().getName())){
                 RsEvent tmpRsEvent = new RsEvent(rsEvent.getEventName(), rsEvent.getKeyword());
