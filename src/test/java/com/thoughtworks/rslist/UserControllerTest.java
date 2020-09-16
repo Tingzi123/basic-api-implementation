@@ -29,4 +29,28 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void name_should_not_empty_or_null() throws Exception {
+        UserDto userDto=new UserDto(null,"woman",18,"@","123456");
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userDtoJson=objectMapper.writeValueAsString(userDto);
+
+        mockMvc.perform(post("/user/register")
+                .content(userDtoJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void name_length_should_no_more_than_8() throws Exception {
+        UserDto userDto=new UserDto("chenchenchen","woman",18,"@","123456");
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userDtoJson=objectMapper.writeValueAsString(userDto);
+
+        mockMvc.perform(post("/user/register")
+                .content(userDtoJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }
