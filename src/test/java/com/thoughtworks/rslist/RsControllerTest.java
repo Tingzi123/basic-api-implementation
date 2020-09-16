@@ -193,14 +193,16 @@ class RsControllerTests {
 
     @Test
     void should_not_add_rs_event_when_name_is_empty() throws Exception {
-        RsEvent rsEvent = new RsEvent("", "经济", new UserDto("lily", "female", 20, "lily@163.com", "12387898789"));
+        RsEvent rsEvent = new RsEvent("", "异常", new UserDto("lily", "female", 20, "lily@163.com", "12387898789"));
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(rsEvent);
 
         mockMvc.perform(post("/rs/event")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
+
     }
 
 }
