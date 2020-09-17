@@ -14,8 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.*;
 ;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -71,7 +70,7 @@ class RsControllerTests {
     }
 
     @Test
-    void should_add_a_rs_event() throws Exception {
+    void should_add_a_rs_event_with_user() throws Exception {
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));
@@ -80,7 +79,8 @@ class RsControllerTests {
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(rsEvent);
 
-        mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(json)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(get("/rs/list"))
@@ -97,6 +97,26 @@ class RsControllerTests {
     }
 
     @Test
+    void should_add_a_rs_event_no_user() throws Exception {
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)));
+
+        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(post("/rs/event").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("index","4"));
+
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$[0].eventName", not(hasKey("user"))));
+    }
+
+    @Test
     void should_change_keyword_with_rs_event() throws Exception {
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
@@ -108,7 +128,8 @@ class RsControllerTests {
         String json = objectMapper.writeValueAsString(rsEvent);
 
         mockMvc.perform(put("/rs/event/change/2").content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(header().string("index","4"));
 
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
