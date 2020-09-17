@@ -13,10 +13,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,8 +41,61 @@ public class UserControllerTest {
                 .andExpect(status().isCreated());
 
         List<UserEntity> users=userRepository.findAll();
-        assertEquals(1,users.size());
+        assertEquals(2,users.size());
         assertEquals("chen",users.get(0).getName());
+    }
+
+    @Test
+    void should_get_one_user_by_id() throws Exception {
+        UserDto userDto=new UserDto("chen","woman",18,"ting@163.com","18588888888");
+        UserEntity userEntity=UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+
+        userRepository.save(userEntity);
+
+        mockMvc.perform(get("/user/get/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name",is("chen")));
+    }
+
+    @Test
+    void should_delete_user_by_id() throws Exception {
+        UserDto userDto=new UserDto("chen","woman",18,"ting@163.com","18588888888");
+        UserEntity userEntity=UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+
+        userRepository.save(userEntity);
+
+        userDto=new UserDto("ting","woman",18,"ting@163.com","18588888888");
+        userEntity=UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+        userRepository.save(userEntity);
+
+
+        mockMvc.perform(delete("/user/delete/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        assertEquals(1,userRepository.findAll().size());
     }
 
     @Test
