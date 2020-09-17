@@ -7,6 +7,7 @@ import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -37,6 +38,12 @@ class RsControllerTests {
 
     @Autowired
     RsEventRepository rsEventRepository;
+
+    @BeforeEach
+    void setUp(){
+        userRepository.deleteAll();
+        rsEventRepository.deleteAll();
+    }
 
     @Test
     void should_get_rs_list() throws Exception {
@@ -215,8 +222,8 @@ class RsControllerTests {
 
         userRepository.save(userEntity);
 
-        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", new UserDto("lily", "female", 20, "lily@163.com", "12387898789"));
-        rsEvent.setUserDto(userDto);
+        int id=userEntity.getId();
+        RsEvent rsEvent = new RsEvent("zhouri","yuy",id);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(rsEvent);
@@ -227,6 +234,20 @@ class RsControllerTests {
 
         List<RsEventEntity> rsEventEntities = rsEventRepository.findAll();
         assertEquals(1,rsEventEntities.size());
-        assertEquals("猪肉涨价了",rsEventEntities.get(0).getEventName());
+        assertEquals("zhouri",rsEventEntities.get(0).getEventName());
+    }
+
+    @Test
+    void should_not_add_a_rs_event_not_exist_user() throws Exception {
+        RsEvent rsEvent = new RsEvent();
+        rsEvent.setEventName("周日");
+        rsEvent.setKeyword("yuy");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(post("/rs/event").content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }

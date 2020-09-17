@@ -1,9 +1,14 @@
 package com.thoughtworks.rslist.api;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.entity.RsEventEntity;
+import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,17 +19,25 @@ import java.util.List;
 
 @RestController
 public class RsController {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RsEventRepository rsEventRepository;
+
+
     private List<RsEvent> rsList = initRsList();
 
     private List<RsEvent> initRsList() {
         List<RsEvent> tmpRsList = new ArrayList<>();
-        tmpRsList.add(new RsEvent("第一条事件", "无分类",new UserDto("lily","female",20,"lily@163.com","12387898789")));
+        /*tmpRsList.add(new RsEvent("第一条事件", "无分类",new UserDto("lily","female",20,"lily@163.com","12387898789")));
         tmpRsList.add(new RsEvent("第二条事件", "无分类"));
         tmpRsList.add(new RsEvent("第三条事件", "无分类"));
-
+*/
         return tmpRsList;
     }
 
+    @JsonView(RsEvent.rsEventDetailView.class)
     @GetMapping("/rs/list")
     public ResponseEntity<List<RsEvent>> getAllRsEvent(@RequestParam(required = false) Integer start,
                                                        @RequestParam(required = false) Integer end) {
@@ -34,6 +47,7 @@ public class RsController {
         return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
 
+    @JsonView(RsEvent.rsEventDetailView.class)
     @GetMapping("/rs/list/{index}")
     public ResponseEntity<RsEvent> getRsEvent(@PathVariable int index) {
         return ResponseEntity.ok(rsList.get(index - 1));
@@ -41,20 +55,22 @@ public class RsController {
 
     @PostMapping("/rs/event")
     public ResponseEntity addRsEvent(@Valid @RequestBody RsEvent rsEvent)  {
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("index", String.valueOf(rsList.size()));
 
-        for (RsEvent rs : rsList) {
-            if (rs.getUserDto()!=null){
-                if (rs.getUserDto().getName().equals(rsEvent.getUserDto().getName())){
-                    RsEvent tmpRsEvent = new RsEvent(rsEvent.getEventName(), rsEvent.getKeyword());
-                    rsList.add(tmpRsEvent);
-                    return ResponseEntity.status(201).headers(headers).build();
-                }
-            }
+        if (!userRepository.existsById(rsEvent.getUserId())){
+            return ResponseEntity.badRequest().headers(headers).build();
         }
-        rsList.add(rsEvent);
+
+        RsEventEntity rsEventEntity=RsEventEntity.builder()
+                .eventName(rsEvent.getEventName())
+                .keyword(rsEvent.getKeyword())
+                .userId(rsEvent.getUserId())
+                .build();
+
+        rsEventRepository.save(rsEventEntity);
+
+//        rsList.add(rsEvent);
         return ResponseEntity.status(201).headers(headers).build();
     }
 

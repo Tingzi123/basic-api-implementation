@@ -26,21 +26,5 @@ public class RsEventEntity {
     private String eventName;
     private String keyword;
 
-    @Valid
-    private UserDto userDto;
-
-    @JsonIgnore
-    public UserDto getUserDto() {
-        return userDto;
-    }
-
-    @JsonProperty
-    public void setUserDto(UserDto userDto) {
-        this.userDto = userDto;
-    }
-
-    public RsEventEntity(String eventName, String keyword) {
-        this.eventName = eventName;
-        this.keyword = keyword;
-    }
+    private int userId;
 }

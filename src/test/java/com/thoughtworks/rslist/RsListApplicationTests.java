@@ -26,13 +26,6 @@ class RsListApplicationTests {
 
     @Test
     void should_get_rs_list() throws Exception {
-        //get("rs/list")
-        /*MvcResult mvcResult = mockMvc.perform(get("rs/list")).andreturn();
-        MockHttpServletResponse response=mvcResuit.getResponse();
-        int status=response.getStatus();
-        assertEquals(200,status);
-        assertEquals(response.getContentString(),"[第一条事件, 第二条事件, 第三条事件]");*/
-
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",hasSize(3)))
