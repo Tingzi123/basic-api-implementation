@@ -3,10 +3,13 @@ package com.thoughtworks.rslist;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.dto.VoteDto;
 import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.entity.VoteEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.repository.VoteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -38,6 +42,9 @@ class RsControllerTests {
 
     @Autowired
     RsEventRepository rsEventRepository;
+
+    @Autowired
+    VoteRepository voteRepository;
 
     @BeforeEach
     void setUp(){
@@ -240,8 +247,8 @@ class RsControllerTests {
     @Test
     void should_not_add_a_rs_event_not_exist_user() throws Exception {
         RsEvent rsEvent = new RsEvent();
-        rsEvent.setEventName("周日");
-        rsEvent.setKeyword("yuy");
+        rsEvent.setEventName("lily");
+        rsEvent.setKeyword("ins");
 
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(rsEvent);
@@ -249,5 +256,160 @@ class RsControllerTests {
         mockMvc.perform(post("/rs/event").content(json)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_change_keyword_with_rs_event_to_databse() throws Exception {
+        UserDto userDto = new UserDto("chen", "woman", 18, "ting@163.com", "18588888888");
+        UserEntity userEntity = UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+
+        userRepository.save(userEntity);
+
+        RsEvent rsEvent = new RsEvent("lily", "ins",1);
+
+        RsEventEntity rsEventEntity=RsEventEntity.builder()
+                .eventName(rsEvent.getEventName())
+                .keyword(rsEvent.getKeyword())
+                .userId(rsEvent.getUserId())
+                .build();
+        rsEventRepository.save(rsEventEntity);
+
+        rsEvent.setKeyword("tiktok");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(put("/rs/event/change?userId=1&index=1").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+//                .andExpect(header().string("index", "1"));
+
+       assertEquals(1,rsEventRepository.findAll().size());
+       assertEquals("tiktok",rsEventRepository.findAll().get(0).getKeyword());
+    }
+
+    @Test
+    void should_not_change_when_user_id_not_equals() throws Exception {
+        UserDto userDto = new UserDto("chen", "woman", 18, "ting@163.com", "18588888888");
+        UserEntity userEntity = UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+
+        userRepository.save(userEntity);
+
+        RsEvent rsEvent = new RsEvent("lily", "ins",1);
+
+        RsEventEntity rsEventEntity=RsEventEntity.builder()
+                .eventName(rsEvent.getEventName())
+                .keyword(rsEvent.getKeyword())
+                .userId(rsEvent.getUserId())
+                .build();
+        rsEventRepository.save(rsEventEntity);
+
+        rsEvent.setKeyword("tiktok");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(put("/rs/event/change?userId=6&index=1").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        assertEquals(1,rsEventRepository.findAll().size());
+        assertEquals("ins",rsEventRepository.findAll().get(0).getKeyword());
+    }
+
+    @Test
+    void should_vote_when_more_than_vote_nums() throws Exception {
+        UserDto userDto = new UserDto("chen", "woman", 18, "ting@163.com", "18588888888");
+        UserEntity userEntity = UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+
+        userRepository.save(userEntity);
+
+        RsEvent rsEvent = new RsEvent("lily", "ins",1);
+
+        RsEventEntity rsEventEntity=RsEventEntity.builder()
+                .eventName(rsEvent.getEventName())
+                .keyword(rsEvent.getKeyword())
+                .userId(rsEvent.getUserId())
+                .build();
+        rsEventRepository.save(rsEventEntity);
+
+        VoteDto voteDto =new VoteDto(2,1,LocalDateTime.now());
+        VoteEntity voteEntity=VoteEntity.builder()
+                .voteNum(voteDto.getVoteNum())
+                .userId(voteDto.getUserId())
+                .voteTime(voteDto.getVoteTime())
+                .build();
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(voteEntity);
+
+        mockMvc.perform(post("/rs/vote/1")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        assertEquals(1,rsEventRepository.findAll().size());
+        assertEquals("ins",rsEventRepository.findAll().get(0).getKeyword());
+        assertEquals(1,voteRepository.findAll().size());
+    }
+
+    @Test
+    void should_vote_when_less_than_vote_nums() throws Exception {
+        UserDto userDto = new UserDto("chen", "woman", 18, "ting@163.com", "18588888888");
+        UserEntity userEntity = UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+
+        userRepository.save(userEntity);
+
+        RsEvent rsEvent = new RsEvent("lily", "ins",1);
+
+        RsEventEntity rsEventEntity=RsEventEntity.builder()
+                .eventName(rsEvent.getEventName())
+                .keyword(rsEvent.getKeyword())
+                .userId(rsEvent.getUserId())
+                .build();
+        rsEventRepository.save(rsEventEntity);
+
+        VoteDto voteDto =new VoteDto(5,1,LocalDateTime.now());
+        VoteEntity voteEntity=VoteEntity.builder()
+                .voteNum(voteDto.getVoteNum())
+                .userId(voteDto.getUserId())
+                .voteTime(voteDto.getVoteTime())
+                .build();
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(voteEntity);
+
+        mockMvc.perform(post("/rs/vote/1").content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        assertEquals(1,rsEventRepository.findAll().size());
+        assertEquals("ins",rsEventRepository.findAll().get(0).getKeyword());
+        assertEquals(0,voteRepository.findAll().size());
     }
 }

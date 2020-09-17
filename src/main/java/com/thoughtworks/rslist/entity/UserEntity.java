@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -29,4 +30,7 @@ public class UserEntity {
 
     private String phone;
     private int vote;
+
+    @OneToMany(mappedBy = "userId",cascade = CascadeType.REMOVE)
+    private List<RsEventEntity> rsEventEntitys;
 }

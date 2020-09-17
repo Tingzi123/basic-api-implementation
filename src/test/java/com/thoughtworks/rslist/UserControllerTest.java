@@ -2,8 +2,11 @@ package com.thoughtworks.rslist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -29,73 +31,13 @@ public class UserControllerTest {
     @Autowired
     UserRepository userRepository;
 
-    @Test
-    void should_register_user_to_database() throws Exception {
-        UserDto userDto=new UserDto("chen","woman",18,"ting@163.com","18588888888");
-        ObjectMapper objectMapper=new ObjectMapper();
-        String userDtoJson=objectMapper.writeValueAsString(userDto);
+    @Autowired
+    RsEventRepository rsEventRepository;
 
-        mockMvc.perform(post("/user/register")
-                .content(userDtoJson)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-
-        List<UserEntity> users=userRepository.findAll();
-        assertEquals(2,users.size());
-        assertEquals("chen",users.get(0).getName());
-    }
-
-    @Test
-    void should_get_one_user_by_id() throws Exception {
-        UserDto userDto=new UserDto("chen","woman",18,"ting@163.com","18588888888");
-        UserEntity userEntity=UserEntity.builder()
-                .name(userDto.getName())
-                .gender(userDto.getGender())
-                .age(userDto.getAge())
-                .email(userDto.getEmail())
-                .phone(userDto.getPhone())
-                .vote(userDto.getVote())
-                .build();
-
-        userRepository.save(userEntity);
-
-        mockMvc.perform(get("/user/get/1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name",is("chen")));
-    }
-
-    @Test
-    void should_delete_user_by_id() throws Exception {
-        UserDto userDto=new UserDto("chen","woman",18,"ting@163.com","18588888888");
-        UserEntity userEntity=UserEntity.builder()
-                .name(userDto.getName())
-                .gender(userDto.getGender())
-                .age(userDto.getAge())
-                .email(userDto.getEmail())
-                .phone(userDto.getPhone())
-                .vote(userDto.getVote())
-                .build();
-
-        userRepository.save(userEntity);
-
-        userDto=new UserDto("ting","woman",18,"ting@163.com","18588888888");
-        userEntity=UserEntity.builder()
-                .name(userDto.getName())
-                .gender(userDto.getGender())
-                .age(userDto.getAge())
-                .email(userDto.getEmail())
-                .phone(userDto.getPhone())
-                .vote(userDto.getVote())
-                .build();
-        userRepository.save(userEntity);
-
-
-        mockMvc.perform(delete("/user/delete/1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        assertEquals(1,userRepository.findAll().size());
+    @BeforeEach
+    void setUp(){
+        userRepository.deleteAll();
+        rsEventRepository.deleteAll();
     }
 
     @Test
@@ -250,5 +192,104 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].name",is("lily")))
                 .andExpect(jsonPath("$[1].name",is("lisa")))
                 .andExpect(jsonPath("$[2].name",is("joy")));
+    }
+
+    @Test
+    void should_register_user_to_database() throws Exception {
+        UserDto userDto=new UserDto("chen","woman",18,"ting@163.com","18588888888");
+        ObjectMapper objectMapper=new ObjectMapper();
+        String userDtoJson=objectMapper.writeValueAsString(userDto);
+
+        mockMvc.perform(post("/user/register")
+                .content(userDtoJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        List<UserEntity> users=userRepository.findAll();
+        assertEquals(2,users.size());
+        assertEquals("chen",users.get(0).getName());
+    }
+
+    @Test
+    void should_get_one_user_by_id() throws Exception {
+        UserDto userDto=new UserDto("chen","woman",18,"ting@163.com","18588888888");
+        UserEntity userEntity=UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+
+        userRepository.save(userEntity);
+
+        mockMvc.perform(get("/user/get/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name",is("chen")));
+    }
+
+    @Test
+    void should_delete_user_by_id() throws Exception {
+        UserDto userDto = new UserDto("chen", "woman", 18, "ting@163.com", "18588888888");
+        UserEntity userEntity = UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+
+        userRepository.save(userEntity);
+
+        userDto = new UserDto("ting", "woman", 18, "ting@163.com", "18588888888");
+        userEntity = UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+        userRepository.save(userEntity);
+
+
+        mockMvc.perform(delete("/user/delete/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        assertEquals(1, userRepository.findAll().size());
+    }
+
+    @Test
+    void should_delete_rs_when_delete_user() throws Exception {
+        UserDto userDto = new UserDto("chen", "woman", 18, "ting@163.com", "18588888888");
+        UserEntity userEntity = UserEntity.builder()
+                .name(userDto.getName())
+                .gender(userDto.getGender())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .vote(userDto.getVote())
+                .build();
+
+        userRepository.save(userEntity);
+
+        RsEventEntity rsEventEntity=RsEventEntity.builder()
+                .eventName("aa")
+                .keyword("bb")
+                .userId(userEntity.getId())
+                .build();
+
+        rsEventRepository.save(rsEventEntity);
+
+        mockMvc.perform(delete("/user/delete/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        assertEquals(0, userRepository.findAll().size());
+        assertEquals(0, rsEventRepository.findAll().size());
     }
 }

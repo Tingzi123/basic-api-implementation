@@ -30,7 +30,7 @@
           
 * 添加投票接口
     ```
-    request: post /rs/vote/{rsEventId}
+    request: post /rs/voteDto/{rsEventId}
     request body: {
                     voteNum: 5,
                     userId: 1,

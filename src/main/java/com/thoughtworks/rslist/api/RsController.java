@@ -11,6 +11,7 @@ import com.thoughtworks.rslist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -74,18 +75,21 @@ public class RsController {
         return ResponseEntity.status(201).headers(headers).build();
     }
 
-    @PutMapping("/rs/event/change/{index}")
-    public ResponseEntity changeRsEvent(@PathVariable int index,
-                                        @RequestBody String rsEventStr) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        RsEvent rsEvent = objectMapper.readValue(rsEventStr, RsEvent.class);
-        rsList.set(index, rsEvent);
-        return ResponseEntity.created(null).build();
-    }
-
     @DeleteMapping("/rs/event/delete/{index}")
     public ResponseEntity deleteRsEvent(@PathVariable int index) {
         rsList.remove(index);
         return ResponseEntity.ok(null);
+    }
+
+    @Transactional
+    @PutMapping("/rs/event/change")
+    public ResponseEntity changeRsEvent(@RequestParam int userId, @RequestParam int index,
+                                        @RequestBody RsEvent rsEvent)  {
+//        rsList.set(index, rsEvent);
+        if (userId!=rsEvent.getUserId()){
+            return ResponseEntity.badRequest().build();
+        }
+        rsEventRepository.updateKeywordbyId(index,rsEvent.getKeyword());
+        return ResponseEntity.created(null).build();
     }
 }
