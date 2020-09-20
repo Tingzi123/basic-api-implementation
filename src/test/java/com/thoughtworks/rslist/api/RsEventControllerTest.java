@@ -65,7 +65,7 @@ class RsEventControllerTests {
                 .andExpect(jsonPath("$[2].keyword", is("无分类")));
     }
 
-    @Test
+/*    @Test
     void should_get_one_rs_event() throws Exception {
         mockMvc.perform(get("/rs/list/1"))
                 .andExpect(status().isOk())
@@ -325,7 +325,7 @@ class RsEventControllerTests {
 
         assertEquals(1,rsEventRepository.findAll().size());
         assertEquals("ins",rsEventRepository.findAll().get(0).getKeyword());
-    }
+    }*/
 
    /* @Test
     void should_vote_when_more_than_vote_nums() throws Exception {

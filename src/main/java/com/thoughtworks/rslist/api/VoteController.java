@@ -49,8 +49,10 @@ public class VoteController {
 
     //分割线
     @GetMapping("/votes")
-    public ResponseEntity<List<VoteDto>> getVotesByUserIdAndRsEventId(@RequestParam int userId,@RequestParam int rsEventId) {
-        List<VoteDto> votes = voteService.getVotesByUserIdAndRsEventId(userId,rsEventId);
+    public ResponseEntity<List<VoteDto>> getVotesByUserIdAndRsEventId(@RequestParam int userId,
+                                                                      @RequestParam int rsEventId,
+                                                                      @RequestParam(defaultValue = "1") int pageIndex) {
+        List<VoteDto> votes = voteService.getVotesByUserIdAndRsEventId(userId, rsEventId, pageIndex);
         return ResponseEntity.ok(votes);
     }
 }

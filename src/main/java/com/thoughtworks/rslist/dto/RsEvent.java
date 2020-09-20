@@ -21,6 +21,7 @@ public class RsEvent {
 
     private String eventName;
     private String keyword;
+    private int voteNum;
 
     private int userId;
 
@@ -33,8 +34,9 @@ public class RsEvent {
         this.userId = userId;
     }
 
-    public RsEvent(String eventName, String keyword) {
+    public RsEvent(String eventName, String keyword,int voteNum) {
         this.eventName = eventName;
         this.keyword = keyword;
+        this.voteNum = voteNum;
     }
 }

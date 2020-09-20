@@ -109,6 +109,30 @@ public class VoteControllerTest {
                 .rsEvent(rsEventEntity)
                 .build();
         voteRepository.save(voteEntity);
+
+        voteEntity = VoteEntity.builder()
+                .voteNum(6)
+                .voteTime(LocalDateTime.now())
+                .user(userEntity)
+                .rsEvent(rsEventEntity)
+                .build();
+        voteRepository.save(voteEntity);
+
+        voteEntity = VoteEntity.builder()
+                .voteNum(7)
+                .voteTime(LocalDateTime.now())
+                .user(userEntity)
+                .rsEvent(rsEventEntity)
+                .build();
+        voteRepository.save(voteEntity);
+
+        voteEntity = VoteEntity.builder()
+                .voteNum(8)
+                .voteTime(LocalDateTime.now())
+                .user(userEntity)
+                .rsEvent(rsEventEntity)
+                .build();
+        voteRepository.save(voteEntity);
     }
 
     @Test
@@ -121,6 +145,28 @@ public class VoteControllerTest {
                 .andExpect(jsonPath("$[0].userId",is(userEntity.getId())))
                 .andExpect(jsonPath("$[0].rsEventId",is(rsEventEntity.getId())))
                 .andExpect(jsonPath("$[0].voteNum",is(1)));
+    }
+
+    @Test
+    void should_get_votes_in_page_by_user_id_and_rs_event_id() throws Exception {
+        mockMvc.perform(get("/votes")
+                .param("userId", String.valueOf(userEntity.getId()))
+                .param("rsEventId", String.valueOf(rsEventEntity.getId())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(5)))
+                .andExpect(jsonPath("$[0].userId",is(userEntity.getId())))
+                .andExpect(jsonPath("$[0].rsEventId",is(rsEventEntity.getId())))
+                .andExpect(jsonPath("$[0].voteNum",is(1)));
+
+        mockMvc.perform(get("/votes")
+                .param("userId", String.valueOf(userEntity.getId()))
+                .param("rsEventId", String.valueOf(rsEventEntity.getId()))
+                .param("pageIndex","2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].userId",is(userEntity.getId())))
+                .andExpect(jsonPath("$[0].rsEventId",is(rsEventEntity.getId())))
+                .andExpect(jsonPath("$[0].voteNum",is(6)));
     }
 
 }

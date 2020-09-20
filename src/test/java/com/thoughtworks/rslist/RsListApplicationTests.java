@@ -68,7 +68,7 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[2].keyword",is("无分类")));
     }
 
-    @Test
+/*    @Test
     void should_add_a_rs_event() throws Exception {
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
@@ -116,7 +116,7 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[1].keyword",is("无分类")))
                 .andExpect(jsonPath("$[2].eventName",is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyword",is("生活")));
-    }
+    }*/
 
     @Test
     void should_delete_a_rs_event() throws Exception {

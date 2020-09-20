@@ -18,5 +18,4 @@ public interface RsEventRepository extends JpaRepository<RsEventEntity, Integer>
     @Modifying
     @Query(value = "update rs_event r set r.keyword=?2 where r.id=?1", nativeQuery = true)
     void updateKeywordbyId(Integer id, String keyword);
-
 }
