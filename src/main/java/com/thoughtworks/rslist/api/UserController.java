@@ -57,16 +57,6 @@ public class UserController {
         return ResponseEntity.created(null).headers(headers).build();
     }
 
-   /* @PostMapping("/user/register")
-    public ResponseEntity register(@Valid @RequestBody UserDto userDtoStr) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("index", String.valueOf(userDtos.size()));
-
-        userDtos.add(userDtoStr);
-        return ResponseEntity.created(null).headers(headers).build();
-    }*/
-
-
     @GetMapping("/user/get/{index}")
     public ResponseEntity getUserById(@PathVariable int index) {
         UserEntity user=userRepository.findUserById(index);

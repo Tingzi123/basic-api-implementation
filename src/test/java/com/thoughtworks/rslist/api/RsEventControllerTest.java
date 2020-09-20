@@ -1,4 +1,4 @@
-package com.thoughtworks.rslist;
+package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 //每次测试重启一个tomcat
-class RsControllerTests {
+class RsEventControllerTests {
 
     @Autowired
     MockMvc mockMvc;
@@ -369,6 +369,7 @@ class RsControllerTests {
         assertEquals(1,rsEventRepository.findAll().size());
         assertEquals("ins",rsEventRepository.findAll().get(0).getKeyword());
         assertEquals(1,voteRepository.findAll().size());
+//        assertEquals(8,userRepository.findUserById(voteDto.getUserId()).getVote());
     }
 
     @Test

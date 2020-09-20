@@ -5,7 +5,7 @@ import com.thoughtworks.rslist.dto.UserDto;
 import lombok.Data;
 
 @Data
-public class CommentService {
+public class UserService {
     private UserDto userDto;
     private RsEvent rsEvent;
 
