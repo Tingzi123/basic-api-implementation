@@ -4,7 +4,7 @@ import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.thoughtworks.rslist.repository.VoteRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +22,13 @@ public class UserController {
 
     private RsEventRepository rsEventRepository;
 
-    public UserController(UserRepository userRepository, RsEventRepository rsEventRepository) {
+    private VoteRepository voteRepository;
+
+
+    public UserController(UserRepository userRepository, RsEventRepository rsEventRepository,VoteRepository voteRepository) {
         this.userRepository = userRepository;
         this.rsEventRepository = rsEventRepository;
+        this.voteRepository = voteRepository;
     }
 
     private List<UserDto> initUsers() {

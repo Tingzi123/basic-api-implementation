@@ -1,13 +1,11 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
-import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +18,17 @@ import java.util.List;
 
 @RestController
 public class RsController {
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private RsEventRepository rsEventRepository;
 
+    private VoteRepository voteRepository;
+
+    public RsController(UserRepository userRepository, RsEventRepository rsEventRepository, VoteRepository voteRepository) {
+        this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
+        this.voteRepository = voteRepository;
+    }
 
     private List<RsEvent> rsList = initRsList();
 
@@ -54,7 +57,7 @@ public class RsController {
         return ResponseEntity.ok(rsList.get(index - 1));
     }
 
-    @PostMapping("/rs/event")
+    /*@PostMapping("/rs/event")
     public ResponseEntity addRsEvent(@Valid @RequestBody RsEvent rsEvent)  {
         HttpHeaders headers = new HttpHeaders();
         headers.add("index", String.valueOf(rsList.size()));
@@ -73,7 +76,7 @@ public class RsController {
 
 //        rsList.add(rsEvent);
         return ResponseEntity.status(201).headers(headers).build();
-    }
+    }*/
 
     @DeleteMapping("/rs/event/delete/{index}")
     public ResponseEntity deleteRsEvent(@PathVariable int index) {

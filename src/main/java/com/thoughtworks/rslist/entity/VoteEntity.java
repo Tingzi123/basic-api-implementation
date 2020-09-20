@@ -23,6 +23,11 @@ public class VoteEntity {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDateTime voteTime;
 
-    private int userId;
-    private int rsEventId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+    @ManyToOne
+    @JoinColumn(name = "rs_event_id")
+    private RsEventEntity rsEvent;
 }

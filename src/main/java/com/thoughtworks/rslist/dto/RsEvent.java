@@ -13,25 +13,16 @@ import javax.validation.Valid;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RsEvent {
-    public interface rsEventSimpleView {}
-    public interface rsEventDetailView extends rsEventSimpleView {}
+    public interface rsEventSimpleView {
+    }
+
+    public interface rsEventDetailView extends rsEventSimpleView {
+    }
 
     private String eventName;
     private String keyword;
 
-   /* @Valid
-    private UserDto userDto;
-
-    @JsonView(rsEventDetailView.class)
-    public UserDto getUserDto() {
-        return userDto;
-    }
-
-    public void setUserDto(UserDto userDto) {
-        this.userDto = userDto;
-    }*/
-
-   private int userId;
+    private int userId;
 
     @JsonView(rsEventDetailView.class)
     public int getUserId() {

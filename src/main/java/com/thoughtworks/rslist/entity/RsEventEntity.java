@@ -26,5 +26,7 @@ public class RsEventEntity {
     private String eventName;
     private String keyword;
 
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 }

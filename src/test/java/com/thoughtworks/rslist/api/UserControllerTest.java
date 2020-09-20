@@ -280,7 +280,7 @@ public class UserControllerTest {
         RsEventEntity rsEventEntity=RsEventEntity.builder()
                 .eventName("aa")
                 .keyword("bb")
-                .userId(userEntity.getId())
+//                .userId(userEntity.getId())
                 .build();
 
         rsEventRepository.save(rsEventEntity);
