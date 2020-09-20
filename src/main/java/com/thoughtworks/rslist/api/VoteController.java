@@ -55,4 +55,12 @@ public class VoteController {
         List<VoteDto> votes = voteService.getVotesByUserIdAndRsEventId(userId, rsEventId, pageIndex);
         return ResponseEntity.ok(votes);
     }
+
+    @GetMapping("/votes/range/time")
+    public ResponseEntity<List<VoteDto>> getVotesByUserIdAndRsEventId(@RequestParam String startTime,
+                                                                      @RequestParam String endTime,
+                                                                      @RequestParam(defaultValue = "1") int pageIndex) {
+        List<VoteDto> votes = voteService.getVotesByRangeTime(startTime,endTime,pageIndex);
+        return ResponseEntity.ok(votes);
+    }
 }

@@ -13,5 +13,5 @@ public interface VoteRepository extends JpaRepository<VoteEntity, Integer> {
 
     List<VoteEntity> findAllByUserIdAndRsEventId(int userId, int RsEventId, Pageable pageable);
 
-    List<VoteEntity> findAllByVoteTimeBetween(LocalDateTime start, LocalDateTime end);
+    List<VoteEntity> findAllByVoteTimeBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
 }

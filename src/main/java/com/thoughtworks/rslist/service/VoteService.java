@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,6 +37,25 @@ public class VoteService {
         Pageable pageable = PageRequest.of(pageIndex - ComConst.INDEXDIFF, ComConst.PAGESIZE);
 
         List<VoteEntity> votes = voteRepository.findAllByUserIdAndRsEventId(userId, rsEventId, pageable);
+        VoteDto voteDto = new VoteDto();
+
+        return votes.stream().map(vote -> voteDto.builder()
+                .userId(vote.getUser().getId())
+                .rsEventId(vote.getRsEvent().getId())
+                .voteNum(vote.getVoteNum())
+                .voteTime(vote.getVoteTime())
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+    public List<VoteDto> getVotesByRangeTime(String startTime,String endTime,int pageIndex) {
+        Pageable pageable = PageRequest.of(pageIndex - ComConst.INDEXDIFF, ComConst.PAGESIZE);
+
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime startLocalDateTime=LocalDateTime.parse(startTime,df);
+        LocalDateTime endLocalDateTime=LocalDateTime.parse(endTime,df);
+
+        List<VoteEntity> votes = voteRepository.findAllByVoteTimeBetween(startLocalDateTime,endLocalDateTime,pageable);
         VoteDto voteDto = new VoteDto();
 
         return votes.stream().map(vote -> voteDto.builder()

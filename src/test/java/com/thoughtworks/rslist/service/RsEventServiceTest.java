@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -54,11 +55,11 @@ public class RsEventServiceTest {
                 .rsEventId(rsEventId)
                 .build();
 
-        UserEntity userEntity=UserEntity.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .vote(userVotNum)
                 .build();
 
-        RsEventEntity rsEventEntity=RsEventEntity.builder()
+        RsEventEntity rsEventEntity = RsEventEntity.builder()
                 .voteNum(RsEventVotNum)
                 .build();
 
@@ -78,5 +79,8 @@ public class RsEventServiceTest {
         verify(userRepository).save(userEntity);
         verify(voteRepository).save(voteEntity);
         verify(rsEventRepository).save(rsEventEntity);
+
+        assertEquals(RsEventVotNum + voteNum, rsEventEntity.getVoteNum());
+        assertEquals(userVotNum - voteNum, userEntity.getVote());
     }
 }
